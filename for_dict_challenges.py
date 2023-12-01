@@ -1,3 +1,6 @@
+from collections import Counter
+
+
 # Задание 1
 # Дан список учеников, нужно посчитать количество повторений каждого имени ученика
 # Пример вывода:
@@ -12,7 +15,17 @@ students = [
     {'first_name': 'Маша'},
     {'first_name': 'Петя'},
 ]
-# ???
+
+value_counts = Counter(s['first_name'] for s in students)
+print('\n'.join(f'{name}: {cnt}' for name, cnt in value_counts.items()))
+
+# через цикл:
+tmp = {}
+for student in students:
+    name = student['first_name']
+    tmp.setdefault(name, 0)
+    tmp[name] += 1
+print('\n'.join(f'{name}: {cnt}' for name, cnt in tmp.items()))
 
 
 # Задание 2
@@ -26,7 +39,21 @@ students = [
     {'first_name': 'Маша'},
     {'first_name': 'Оля'},
 ]
-# ???
+value_counts = Counter(s['first_name'] for s in students)
+res = value_counts.most_common()[0]
+print(f'Самое частое имя среди учеников: {res[0]}')
+
+# через цикл:
+tmp = {}
+most_common_name = {'name': '', 'cnt': 0}
+for student in students:
+    name = student['first_name']
+    tmp.setdefault(name, 0)
+    tmp[name] += 1
+    if tmp[name] > most_common_name['cnt']:
+        most_common_name['name'] = name
+        most_common_name['cnt'] = tmp[name]
+print(f'Самое частое имя среди учеников: {most_common_name["name"]}')
 
 
 # Задание 3
@@ -44,14 +71,31 @@ school_students = [
         {'first_name': 'Маша'},
         {'first_name': 'Маша'},
         {'first_name': 'Оля'},
-    ],[  # это – третий класс
+    ], [  # это – третий класс
         {'first_name': 'Женя'},
         {'first_name': 'Петя'},
         {'first_name': 'Женя'},
         {'first_name': 'Саша'},
     ],
 ]
-# ???
+for class_num, students in enumerate(school_students, 1):
+    most_common_name = Counter(s['first_name'] for s in students).most_common()[0]
+    print(f'Самое частое имя в классе {class_num}: {most_common_name[0]}')
+
+# через цикл
+tmp = []
+for class_num, students in enumerate(school_students, 1):
+    most_common_name = {'name': '', 'cnt': 0}
+    tmp = {}
+    for student in students:
+        name = student['first_name']
+        tmp.setdefault(name, 0)
+        tmp[name] += 1
+        if tmp[name] > most_common_name['cnt']:
+            most_common_name['name'] = name
+            most_common_name['cnt'] = tmp[name]
+    print(f'Самое частое имя в классе {class_num}: {most_common_name["name"]}')
+
 
 
 # Задание 4
@@ -72,11 +116,20 @@ is_male = {
     'Миша': True,
     'Даша': False,
 }
-# ???
+
+
+for row in school:
+    tmp = {'girls': 0, 'boys': 0,}
+    for student in row['students']:
+        if is_male[student['first_name']]:
+            tmp['boys'] += 1
+        else:
+            tmp['girls'] += 1
+    print(f'Класс {row["class"]}: девочки {tmp["girls"]}, мальчики {tmp["boys"]} ')
 
 
 # Задание 5
-# По информации о учениках разных классов нужно найти класс, в котором больше всего девочек и больше всего мальчиков
+# По информации об учениках разных классов нужно найти класс, в котором больше всего девочек и больше всего мальчиков
 # Пример вывода:
 # Больше всего мальчиков в классе 3c
 # Больше всего девочек в классе 2a
@@ -91,5 +144,21 @@ is_male = {
     'Олег': True,
     'Миша': True,
 }
-# ???
+
+res = {'girls_class': '', 'girls_cnt': 0, 'boys_class': '', 'boys_cnt': 0 }
+for row in school:
+    tmp = {'girls': 0, 'boys': 0,}
+    for student in row['students']:
+        if is_male[student['first_name']]:
+            tmp['boys'] += 1
+        else:
+            tmp['girls'] += 1
+    if tmp['girls'] > res['girls_cnt']:
+        res['girls_class'] = row['class']
+        res['girls_cnt'] = tmp['girls']
+    if tmp['boys'] > res['boys_cnt']:
+        res['boys_class'] = row['class']
+        res['boys_cnt'] = tmp['boys']
+print(f'Больше всего мальчиков в классе {res["boys_class"]}')
+print(f'Больше всего девочек в классе {res["girls_class"]}')
 
